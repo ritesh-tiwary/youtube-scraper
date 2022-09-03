@@ -185,3 +185,4 @@ class YoutubeSearch:
         channel = self.get_search(query=query)
         channel_name = self.get_value(next(channel), ["title", "simpleText"])
         return channel_name
+        
