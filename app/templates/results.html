@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Youtube: ScraperApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="table-users">
+    <div class="header">Youtube: ScraperApp</div>
+    <table cellspacing="0">
+      <tr>
+        <th>Title</th>
+        <th>Video Link</th>
+        <th>Views</th>
+        <th>Comments</th>
+        <th>Thumbnail</th>
+      </tr>
+         {% for item in data %}
+      <tr>
+        <td>{{item['title']}}</td>
+        <td><a href="{{item['videoUrl']}}" target="_blank">{{item['videoUrl']}}</a></td>
+        <td>{{item['viewCountText'].split()[0]}}</td>
+        <td>{{item['no_of_comments']}}</td>
+        <td><img src="{{item['richThumbnailUrl']}}" alt="..." style="width:100%"></td>
+        {% endfor %}
+   </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+gunicorn
+pymongo
+psycopg2
+flask==2.0.3
+flask-cors==3.0.10
+pytube==12.1.0
+dateparser==1.1.1
+regex==2022.3.2

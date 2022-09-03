@@ -1,0 +1,4 @@
+.idea
+__pycache__
+app/logs/*
+app/download/*

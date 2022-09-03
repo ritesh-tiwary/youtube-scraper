@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+     <h1>Youtube: ScraperApp</h1>
+<!--    <div style="display: flex;">-->
+<!--      <div style="flex: 33.33%; padding: 5px;">-->
+<!--          <img src="../static/img/play" alt="..." style="width:100%">-->
+<!--      </div>-->
+<!--      <div style="flex: 33.33%; padding: 10px;">-->
+<!--          <h1>::Youtube ScraperApp</h1>-->
+<!--      </div>-->
+<!--    </div>-->
+
+
+    <div class="form">
+        <form action="/content" method="POST">
+            <input type="text" name="content" id="content">
+            <input type="submit" value="Search">
+        </form>
+    </div>
+</div>
+{% endblock %}
+
