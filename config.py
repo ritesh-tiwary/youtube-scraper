@@ -19,3 +19,5 @@ CSRF_ENABLED = True
 # signing the data.
 CSRF_SESSION_KEY = "secret"
 
+MONGODB = "youtube"
+MONGODB_URI = "mongodb+srv://iNeuron:iNeuron@cluster0.0bc4nzs.mongodb.net/?retryWrites=true&w=majority"

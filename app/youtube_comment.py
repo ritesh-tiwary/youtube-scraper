@@ -5,7 +5,7 @@ import re
 import time
 import dateparser
 import requests
-import pandas as pd
+from .database import Database
 
 SORT_BY_POPULAR = 0
 SORT_BY_RECENT = 1
@@ -121,11 +121,20 @@ class YoutubeComment:
             time.sleep(sleep)
 
     def get_comments_details(self, video_id):
+        comment_with_commenter_name = list()
+        t = ("video_id", "commenter_name", "comment", "likes")
         comment_generator = self.get_comments(video_id, 1, 'en')
-        comment_with_commenter_name = pd.DataFrame(list(comment_generator))
-        comment_with_commenter_name.rename(columns={'author': 'commenter_name', 'text': 'comment'}, inplace=True)
-        comment_with_commenter_name = comment_with_commenter_name[["commenter_name", "comment"]]
-        return comment_with_commenter_name
+        for comment in comment_generator:
+            comment["video_id"] = video_id
+            comment['comment'] = comment.pop('text')
+            comment['commenter_name'] = comment.pop('author')
+            comment['likes'] = comment.pop('votes')
+            comment = dict([(key, comment[key]) for key in t])
+            comment_with_commenter_name.append(comment)
+
+        result = Database("comments").insert_comments(comment_with_commenter_name)
+        print("Successfully Inserted" if result == True else "Insert Failed")
+        return len(comment_with_commenter_name)
 
     @staticmethod
     def regex_search(text, pattern, group=1, default=None):

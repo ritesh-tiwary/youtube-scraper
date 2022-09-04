@@ -1,6 +1,7 @@
+import traceback
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS, cross_origin
-import traceback
+from .database import Database
 from .youtube_search import YoutubeSearch
 from .youtube_comment import YoutubeComment
 from .youtube_video_download import YoutubeVideo
@@ -41,8 +42,9 @@ def content():
                                                                              "movingThumbnailDetails", "thumbnails", 0,
                                                                              "url"])
 
-                comment_with_commenter_name = youtube_comment_object.get_comments_details(video_id)
-                no_of_comments = len(comment_with_commenter_name)
+                no_of_comments = youtube_comment_object.get_comments_details(video_id)
+                # comments = Database("comments").get_comments(video_id)
+                # print(comments)
                 YoutubeVideo(video_url).download()
 
                 # print(video_id)

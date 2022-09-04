@@ -1,3 +1,4 @@
+*.odt
 .idea
 __pycache__
 app/logs/*
