@@ -1,3 +1,4 @@
+import os
 import traceback
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -11,8 +12,6 @@ app = Flask(__name__)
 
 # Configurations
 app.config.from_object('config')
-
-SEARCH_LIMIT = 1
 
 
 @app.route('/')
@@ -30,8 +29,11 @@ def content():
             youtube_search_object = YoutubeSearch()
             youtube_comment_object = YoutubeComment()
             search_text = request.form['content'].replace(" ", "")
+            # search_limit = request.form['search_limit']
             channel_id = youtube_search_object.get_channel_id(query=search_text)
-            videos = youtube_search_object.get_channel(channel_id=channel_id, limit=SEARCH_LIMIT)
+            channel_name = youtube_search_object.get_channel_name(query=search_text)
+            videos = youtube_search_object.get_channel(channel_id=channel_id)
+            # videos = youtube_search_object.get_channel(channel_id=channel_id, limit=int(search_limit))
 
             for video in videos:
                 video_id = youtube_search_object.get_value(video, ["videoId"])
@@ -42,27 +44,19 @@ def content():
                                                                              "movingThumbnailDetails", "thumbnails", 0,
                                                                              "url"])
 
+                # no_of_comments = 10     # FOR DEBUG
                 no_of_comments = youtube_comment_object.get_comments_details(video_id)
-                # comments = Database("comments").get_comments(video_id)
-                # print(comments)
                 YoutubeVideo(video_url).download()
 
-                # print(video_id)
-                # print(channel_id)
-                # print(title)
-                # print(video_url)
-                # print(view_count_text)
-                # print(rich_thumbnail_url)
-                # print(no_of_comments)
-                # print(comment_with_commenter_name)
-                # print()
-                save_data = {"VideoId": video_id, "ChannelId": channel_id, "Title": title,
+                save_data = {"VideoId": video_id, "ChannelId": channel_id, "ChannelName": channel_name,
+                             "ChannelUrl": f"https://www.youtube.com/channel/{channel_id}", "Title": title,
                              "VideoUrl": video_url, "ViewCount": view_count_text.split()[0],
                              "CommentCount": no_of_comments, "ThumbnailUrl": rich_thumbnail_url}
 
-                # print(save_data)
-                render_data = {"title": title, "videoUrl": video_url, "viewCountText": view_count_text,
-                               "no_of_comments": no_of_comments, "richThumbnailUrl": rich_thumbnail_url}
+                print(save_data)
+                render_data = {"video_id": video_id, "title": title, "videoUrl": video_url,
+                               "viewCountText": view_count_text, "no_of_comments": no_of_comments,
+                               "richThumbnailUrl": rich_thumbnail_url}
                 data.append(render_data)
             return render_template('results.html', data=data), 200
         except Exception as e:
@@ -73,9 +67,24 @@ def content():
         return render_template("index.html"), 200
 
 
+@app.route("/comments/<video_id>")
+@cross_origin()
+def comments(video_id):
+    data = Database("comments").get_comments(video_id)
+    return render_template("comments.html", data=data), 200
+
+
+@app.route("/cleanup/<id>")
+@cross_origin()
+def cleanup(id):
+    if id == "101":
+        for f in os.listdir("app/download"):
+            os.remove(os.path.join("app/download", f))
+    return "OK", 200
+
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 @cross_origin()
 def not_found(error):
     return render_template('404.html'), 404
-    

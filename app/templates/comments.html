@@ -11,19 +11,15 @@
     <div class="header">Youtube: ScraperApp</div>
     <table cellspacing="0">
       <tr>
-        <th>Title</th>
-        <th>Video Link</th>
-        <th>Views</th>
+        <th>Commenter Name</th>
         <th>Comments</th>
-        <th>Thumbnail</th>
+        <th>Likes</th>
       </tr>
          {% for item in data %}
       <tr>
-        <td>{{item['title']}}</td>
-        <td><a href="{{item['videoUrl']}}" target="_blank">{{item['videoUrl']}}</a></td>
-        <td>{{item['viewCountText'].split()[0]}}</td>
-        <td><a href="/comments/{{item['video_id']}}" target="_blank">{{item['no_of_comments']}}</a></td>
-        <td><img src="{{item['richThumbnailUrl']}}" alt="..." style="width:100%"></td>
+        <td>{{item['commenter_name']}}</td>
+        <td>{{item['comment']}}</td>
+        <td>{{item['likes']}}</td>
         {% endfor %}
    </table>
 </div>
