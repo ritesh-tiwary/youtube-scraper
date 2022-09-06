@@ -5,7 +5,7 @@ import re
 import time
 import dateparser
 import requests
-from .database import Database
+from .database import Mongodb
 
 SORT_BY_POPULAR = 0
 SORT_BY_RECENT = 1
@@ -132,7 +132,7 @@ class YoutubeComment:
             comment = dict([(key, comment[key]) for key in t])
             comment_with_commenter_name.append(comment)
 
-        result = Database("comments").insert_comments(comment_with_commenter_name)
+        result = Mongodb("comments").insert_comments(comment_with_commenter_name)
         print("Successfully Inserted" if result == True else "Insert Failed")
         return len(comment_with_commenter_name)
 

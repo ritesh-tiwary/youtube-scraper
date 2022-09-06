@@ -1,17 +1,21 @@
 import os
+import logging
 import traceback
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS, cross_origin
-from .database import Database
+from .database import Mongodb, Postgresdb
 from .youtube_search import YoutubeSearch
 from .youtube_comment import YoutubeComment
 from .youtube_video_download import YoutubeVideo
+from .google_drive_video_upload import GoogleDrives
 
 # Define the WSGI application object
 app = Flask(__name__)
 
 # Configurations
 app.config.from_object('config')
+# logging.basicConfig(filename='app/logs/app.log', level=logging.DEBUG,
+#                     format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 
 @app.route('/')
@@ -26,6 +30,7 @@ def content():
     if request.method == "POST":
         try:
             data = list()
+            youtube_data = list()
             youtube_search_object = YoutubeSearch()
             youtube_comment_object = YoutubeComment()
             search_text = request.form['content'].replace(" ", "")
@@ -46,18 +51,22 @@ def content():
 
                 # no_of_comments = 10     # FOR DEBUG
                 no_of_comments = youtube_comment_object.get_comments_details(video_id)
-                YoutubeVideo(video_url).download()
 
                 save_data = {"VideoId": video_id, "ChannelId": channel_id, "ChannelName": channel_name,
                              "ChannelUrl": f"https://www.youtube.com/channel/{channel_id}", "Title": title,
-                             "VideoUrl": video_url, "ViewCount": view_count_text.split()[0],
+                             "VideoUrl": video_url, "ViewCount": view_count_text.split()[0] if view_count_text is not None else 0,
                              "CommentCount": no_of_comments, "ThumbnailUrl": rich_thumbnail_url}
 
-                print(save_data)
+                # print(save_data)
                 render_data = {"video_id": video_id, "title": title, "videoUrl": video_url,
                                "viewCountText": view_count_text, "no_of_comments": no_of_comments,
                                "richThumbnailUrl": rich_thumbnail_url}
                 data.append(render_data)
+                youtube_data.append(save_data)
+            YoutubeVideo.download(data)
+            # GoogleDrives.upload()
+            Postgresdb("youtube").insert(youtube_data)
+            print(Postgresdb("youtube").select(channel_id))
             return render_template('results.html', data=data), 200
         except Exception as e:
             print('The Exception message is: ', e)
@@ -70,7 +79,7 @@ def content():
 @app.route("/comments/<video_id>")
 @cross_origin()
 def comments(video_id):
-    data = Database("comments").get_comments(video_id)
+    data = Mongodb("comments").get_comments(video_id)
     return render_template("comments.html", data=data), 200
 
 
@@ -80,6 +89,7 @@ def cleanup(id):
     if id == "101":
         for f in os.listdir("app/download"):
             os.remove(os.path.join("app/download", f))
+            print(f"Deleted - {f}")
     return "OK", 200
 
 

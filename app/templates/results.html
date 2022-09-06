@@ -21,7 +21,7 @@
       <tr>
         <td>{{item['title']}}</td>
         <td><a href="{{item['videoUrl']}}" target="_blank">{{item['videoUrl']}}</a></td>
-        <td>{{item['viewCountText'].split()[0]}}</td>
+        <td>{{item['viewCountText'].split()[0] if item['viewCountText'] is not none else 0}}</td>
         <td><a href="/comments/{{item['video_id']}}" target="_blank">{{item['no_of_comments']}}</a></td>
         <td><img src="{{item['richThumbnailUrl']}}" alt="..." style="width:100%"></td>
         {% endfor %}

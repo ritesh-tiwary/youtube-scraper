@@ -1,12 +1,13 @@
+import os
+import psycopg2
 from pymongo import MongoClient
-from config import MONGODB, MONGODB_URI
 from pymongo.errors import ConnectionFailure
 
 
-class Database:
+class Mongodb:
     def __init__(self, collection_name):
-        client = MongoClient(MONGODB_URI)
-        db = client[MONGODB]
+        client = MongoClient(os.environ['MONGODB_URL'])
+        db = client['youtube']
         self.collection = db[collection_name]
 
     def get_comments(self, video_id):
@@ -22,3 +23,46 @@ class Database:
             return result.acknowledged
         except ConnectionFailure:
             print("Server not available")
+
+
+class Postgresdb:
+    def __init__(self, table_name):
+        self.table_name = table_name
+        self.connection = psycopg2.connect(os.environ['POSTGRES_URL'], sslmode='require')
+
+    def select(self, channel_id):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(f"SELECT * FROM YOUTUBE WHERE CHANNELID='{channel_id}'")
+            result = cursor.fetchall()
+            return result
+        except psycopg2.DatabaseError as error:
+            print(error)
+        finally:
+            cursor.close()
+            self.connection.close()
+
+    def insert(self, data):
+        try:
+            cursor = self.connection.cursor()
+            # cursor.execute("DROP TABLE YOUTUBE")
+            # cursor.execute("DELETE FROM YOUTUBE")
+            # cursor.execute(
+            #     "CREATE TABLE YOUTUBE(VideoId VARCHAR(50) PRIMARY KEY, ChannelId VARCHAR(100) NOT NULL,"
+            #     "ChannelName VARCHAR(100), ChannelUrl VARCHAR(200) NOT NULL, Title VARCHAR(500) NOT NULL,"
+            #     "VideoUrl VARCHAR(200) NOT NULL, ViewCount VARCHAR(50) NOT NULL, CommentCount INTEGER,"
+            #     "ThumbnailUrl VARCHAR(500) NOT NULL)")
+            cursor.executemany("INSERT INTO YOUTUBE(VideoId, ChannelId, ChannelName, ChannelUrl, Title, VideoUrl,"
+                               "ViewCount, CommentCount, ThumbnailUrl)"
+                               "VALUES (%(VideoId)s, %(ChannelId)s, %(ChannelName)s, %(ChannelUrl)s,"
+                               "%(Title)s, %(VideoUrl)s, %(ViewCount)s, %(CommentCount)s, %(ThumbnailUrl)s)", data)
+            print("Successfully Inserted!")
+        except psycopg2.IntegrityError:
+            pass
+        except psycopg2.DatabaseError as error:
+            print(error)
+        else:
+            self.connection.commit()
+            cursor.close()
+        finally:
+            self.connection.close()

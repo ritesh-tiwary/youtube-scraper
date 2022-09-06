@@ -1,5 +1,8 @@
 *.odt
+*.mp4
+*.json
+*.log
+*.ini
 .idea
 __pycache__
-app/logs/*
-app/download/*
+
