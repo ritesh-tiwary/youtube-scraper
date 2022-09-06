@@ -61,6 +61,8 @@ class Postgresdb:
             pass
         except psycopg2.DatabaseError as error:
             print(error)
+        except Exception as error:
+            print(error)
         else:
             self.connection.commit()
             cursor.close()

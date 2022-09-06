@@ -71,7 +71,7 @@ def content():
         except Exception as e:
             print('The Exception message is: ', e)
             traceback.print_exc()
-            return 'something is wrong'
+            return 'something is wrong', 500
     else:
         return render_template("index.html"), 200
 
@@ -79,17 +79,27 @@ def content():
 @app.route("/comments/<video_id>")
 @cross_origin()
 def comments(video_id):
-    data = Mongodb("comments").get_comments(video_id)
+    try:
+        data = Mongodb("comments").get_comments(video_id)
+    except Exception as e:
+        print('The Exception message is: ', e)
+        traceback.print_exc()
+        return 'something is wrong', 500
     return render_template("comments.html", data=data), 200
 
 
 @app.route("/cleanup/<id>")
 @cross_origin()
 def cleanup(id):
-    if id == "101":
-        for f in os.listdir("app/download"):
-            os.remove(os.path.join("app/download", f))
-            print(f"Deleted - {f}")
+    try:
+        if id == "101":
+            for f in os.listdir("app/download"):
+                os.remove(os.path.join("app/download", f))
+                print(f"Deleted - {f}")
+    except Exception as e:
+        print('The Exception message is: ', e)
+        traceback.print_exc()
+        return 'something is wrong', 500
     return "OK", 200
 
 
