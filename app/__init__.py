@@ -7,7 +7,7 @@ from .database import Mongodb, Postgresdb
 from .youtube_search import YoutubeSearch
 from .youtube_comment import YoutubeComment
 from .youtube_video_download import YoutubeVideo
-from .google_drive_video_upload import GoogleDrives
+# from .google_drive_video_upload import GoogleDrives
 
 # Define the WSGI application object
 app = Flask(__name__)
