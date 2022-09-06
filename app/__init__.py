@@ -30,7 +30,6 @@ def content():
     if request.method == "POST":
         try:
             data = list()
-            youtube_data = list()
             youtube_search_object = YoutubeSearch()
             youtube_comment_object = YoutubeComment()
             search_text = request.form['content'].replace(" ", "")
@@ -52,21 +51,16 @@ def content():
                 # no_of_comments = 10     # FOR DEBUG
                 no_of_comments = youtube_comment_object.get_comments_details(video_id)
 
-                save_data = {"VideoId": video_id, "ChannelId": channel_id, "ChannelName": channel_name,
+                d = {"VideoId": video_id, "ChannelId": channel_id, "ChannelName": channel_name,
                              "ChannelUrl": f"https://www.youtube.com/channel/{channel_id}", "Title": title,
                              "VideoUrl": video_url, "ViewCount": view_count_text.split()[0] if view_count_text is not None else 0,
                              "CommentCount": no_of_comments, "ThumbnailUrl": rich_thumbnail_url}
+                data.append(d)
 
-                # print(save_data)
-                render_data = {"video_id": video_id, "title": title, "videoUrl": video_url,
-                               "viewCountText": view_count_text, "no_of_comments": no_of_comments,
-                               "richThumbnailUrl": rich_thumbnail_url}
-                data.append(render_data)
-                youtube_data.append(save_data)
             # YoutubeVideo.download(data)
             # GoogleDrives.upload()
-            Postgresdb("youtube").insert(youtube_data)
-            print(Postgresdb("youtube").select(channel_id))
+            Postgresdb("youtube").insert(data)
+            data = Postgresdb("youtube").select(channel_id)
             return render_template('results.html', data=data), 200
         except Exception as e:
             print('The Exception message is: ', e)

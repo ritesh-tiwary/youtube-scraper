@@ -51,14 +51,13 @@ class Postgresdb:
             #     "CREATE TABLE YOUTUBE(VideoId VARCHAR(50) PRIMARY KEY, ChannelId VARCHAR(100) NOT NULL,"
             #     "ChannelName VARCHAR(100), ChannelUrl VARCHAR(200) NOT NULL, Title VARCHAR(500) NOT NULL,"
             #     "VideoUrl VARCHAR(200) NOT NULL, ViewCount VARCHAR(50) NOT NULL, CommentCount INTEGER,"
-            #     "ThumbnailUrl VARCHAR(500) NOT NULL)")
+            #     "ThumbnailUrl VARCHAR(500))")
             cursor.executemany("INSERT INTO YOUTUBE(VideoId, ChannelId, ChannelName, ChannelUrl, Title, VideoUrl,"
                                "ViewCount, CommentCount, ThumbnailUrl)"
                                "VALUES (%(VideoId)s, %(ChannelId)s, %(ChannelName)s, %(ChannelUrl)s,"
-                               "%(Title)s, %(VideoUrl)s, %(ViewCount)s, %(CommentCount)s, %(ThumbnailUrl)s)", data)
+                               "%(Title)s, %(VideoUrl)s, %(ViewCount)s, %(CommentCount)s, %(ThumbnailUrl)s) "
+                               "ON CONFLICT DO NOTHING", data)
             print("Successfully Inserted!")
-        except psycopg2.IntegrityError:
-            pass
         except psycopg2.DatabaseError as error:
             print(error)
         except Exception as error:

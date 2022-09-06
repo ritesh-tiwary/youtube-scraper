@@ -11,6 +11,7 @@
     <div class="header">Youtube: ScraperApp</div>
     <table cellspacing="0">
       <tr>
+        <th>Channel Name</th>
         <th>Title</th>
         <th>Video Link</th>
         <th>Views</th>
@@ -19,11 +20,12 @@
       </tr>
          {% for item in data %}
       <tr>
-        <td>{{item['title']}}</td>
-        <td><a href="{{item['videoUrl']}}" target="_blank">{{item['videoUrl']}}</a></td>
-        <td>{{item['viewCountText'].split()[0] if item['viewCountText'] is not none else 0}}</td>
-        <td><a href="/comments/{{item['video_id']}}" target="_blank">{{item['no_of_comments']}}</a></td>
-        <td><img src="{{item['richThumbnailUrl']}}" alt="..." style="width:100%"></td>
+        <td>{{item[2]}}</td>
+        <td>{{item[4]}}</td>
+        <td><a href="{{item[5]}}" target="_blank">{{item[5]}}</a></td>
+        <td>{{item[6].split()[0] if item[6] is not none else 0}}</td>
+        <td><a href="/comments/{{item[0]}}" target="_blank">{{item[7]}}</a></td>
+        <td><img src="{{item[8]}}" alt="..." style="width:100%"></td>
         {% endfor %}
    </table>
 </div>

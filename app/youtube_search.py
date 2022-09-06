@@ -10,7 +10,7 @@ class YoutubeSearch:
             self,
             channel_id: str = None,
             channel_url: str = None,
-            limit: int = 5,    # SEARCH_LIMIT
+            limit: int = 10,    # SEARCH_LIMIT
             sleep: int = 1,
             sort_by: Literal["newest", "oldest", "popular"] = "newest",
             ) -> Generator[dict, None, None]:
