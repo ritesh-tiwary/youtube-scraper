@@ -63,7 +63,7 @@ def content():
                                "richThumbnailUrl": rich_thumbnail_url}
                 data.append(render_data)
                 youtube_data.append(save_data)
-            YoutubeVideo.download(data)
+            # YoutubeVideo.download(data)
             # GoogleDrives.upload()
             Postgresdb("youtube").insert(youtube_data)
             print(Postgresdb("youtube").select(channel_id))
