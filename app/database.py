@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from pymongo.errors import DuplicateKeyError, ConnectionFailure
 
 
 class Mongodb:
@@ -22,9 +22,18 @@ class Mongodb:
     def insert_comments(self, comment_with_commenter_name):
         try:
             result = self.collection.insert_one(comment_with_commenter_name)
+            print(f"Inserted Count: {result.inserted_count}")
             return result.acknowledged
         except ConnectionFailure:
             print("Server not available")
+        except DuplicateKeyError:
+            try:
+                result = self.collection.delete_one({"video_id": comment_with_commenter_name["video_id"]})
+                print(f"Deleted Count: {result.deleted_count}")
+                result = self.collection.insert_one(comment_with_commenter_name)
+                return result.acknowledged
+            except Exception as error:
+                print(error)
         except Exception as error:
             print(error)
 
