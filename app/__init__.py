@@ -73,6 +73,7 @@ def content():
 def comments(video_id):
     try:
         data = Mongodb("comments").get_comments(video_id)
+        if len(data) > 0: data = data[0]["comments"]
     except Exception as e:
         print('The Exception message is: ', e)
         traceback.print_exc()
