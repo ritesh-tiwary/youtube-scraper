@@ -42,6 +42,21 @@ class Postgresdb:
             cursor.close()
             self.connection.close()
 
+    def update(self, no_of_comments, video_id):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("UPDATE YOUTUBE SET COMMENTCOUNT=%s WHERE VIDEOID=%s", (no_of_comments, video_id))
+            print(f"No of comments({no_of_comments}) updated for video id({video_id})!")
+        except psycopg2.DatabaseError as error:
+            print(error)
+        except Exception as error:
+            print(error)
+        else:
+            self.connection.commit()
+            cursor.close()
+        finally:
+            self.connection.close()
+
     def insert(self, data):
         try:
             cursor = self.connection.cursor()
@@ -57,7 +72,8 @@ class Postgresdb:
                                "VALUES (%(VideoId)s, %(ChannelId)s, %(ChannelName)s, %(ChannelUrl)s,"
                                "%(Title)s, %(VideoUrl)s, %(ViewCount)s, %(CommentCount)s, %(ThumbnailUrl)s) "
                                "ON CONFLICT DO NOTHING", data)
-            print("Successfully Inserted!")
+            rowcount = cursor.rowcount
+            print(f"{rowcount} Rows Successfully Inserted!")
         except psycopg2.DatabaseError as error:
             print(error)
         except Exception as error:

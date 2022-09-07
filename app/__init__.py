@@ -1,6 +1,7 @@
 import os
 import logging
 import traceback
+from threading import Thread
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS, cross_origin
 from .database import Mongodb, Postgresdb
@@ -31,7 +32,6 @@ def content():
         try:
             data = list()
             youtube_search_object = YoutubeSearch()
-            youtube_comment_object = YoutubeComment()
             search_text = request.form['content'].replace(" ", "")
             # search_limit = request.form['search_limit']
             channel_id = youtube_search_object.get_channel_id(query=search_text)
@@ -48,18 +48,16 @@ def content():
                                                                              "movingThumbnailDetails", "thumbnails", 0,
                                                                              "url"])
 
-                # no_of_comments = 10     # FOR DEBUG
-                no_of_comments = youtube_comment_object.get_comments_details(video_id)
-
                 d = {"VideoId": video_id, "ChannelId": channel_id, "ChannelName": channel_name,
                              "ChannelUrl": f"https://www.youtube.com/channel/{channel_id}", "Title": title,
                              "VideoUrl": video_url, "ViewCount": view_count_text.split()[0] if view_count_text is not None else 0,
-                             "CommentCount": no_of_comments, "ThumbnailUrl": rich_thumbnail_url}
+                             "CommentCount": 0, "ThumbnailUrl": rich_thumbnail_url}
                 data.append(d)
 
-            # YoutubeVideo.download(data)
-            # GoogleDrives.upload()
             Postgresdb("youtube").insert(data)
+            Thread(target=YoutubeComment().get_comments_details, args=[data], daemon=True).start()
+            Thread(target=YoutubeVideo.download, args=[data], daemon=True).start()
+            # GoogleDrives.upload()
             data = Postgresdb("youtube").select(channel_id)
             return render_template('results.html', data=data), 200
         except Exception as e:

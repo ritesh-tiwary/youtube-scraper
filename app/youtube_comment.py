@@ -5,7 +5,10 @@ import re
 import time
 import dateparser
 import requests
-from .database import Mongodb
+
+import traceback
+from .database import Mongodb, Postgresdb
+from concurrent.futures import ThreadPoolExecutor
 
 SORT_BY_POPULAR = 0
 SORT_BY_RECENT = 1
@@ -120,7 +123,7 @@ class YoutubeComment:
                 yield result
             time.sleep(sleep)
 
-    def get_comments_details(self, video_id):
+    def get_comments_detail(self, video_id):
         comment_with_commenter_name = list()
         t = ("video_id", "commenter_name", "comment", "likes")
         comment_generator = self.get_comments(video_id, 1, 'en')
@@ -132,9 +135,18 @@ class YoutubeComment:
             comment = dict([(key, comment[key]) for key in t])
             comment_with_commenter_name.append(comment)
 
+        no_of_comments = len(comment_with_commenter_name)
         result = Mongodb("comments").insert_comments(comment_with_commenter_name)
-        print("Successfully Inserted" if result == True else "Insert Failed")
-        return len(comment_with_commenter_name)
+        if result: Postgresdb("youtube").update(no_of_comments, video_id)
+        # print("Successfully Inserted!" if result == True else "Insert Failed!")
+
+    def get_comments_details(self, videos):
+        try:
+            with ThreadPoolExecutor(max_workers=len(videos)) as executor:
+                executor.map(self.get_comments_detail, [video["VideoId"] for video in videos])
+        except Exception as e:
+            print('The Exception message is: ', e)
+            traceback.print_exc()
 
     @staticmethod
     def regex_search(text, pattern, group=1, default=None):

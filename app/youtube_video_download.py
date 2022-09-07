@@ -23,7 +23,7 @@ class YoutubeVideo:
     def download(videos):
         try:
             with ThreadPoolExecutor(max_workers=len(videos)) as executor:
-                executor.map(YoutubeVideo.download_video, [video["videoUrl"] for video in videos])
+                executor.map(YoutubeVideo.download_video, [video["VideoUrl"] for video in videos])
         except Exception as e:
             print('The Exception message is: Download failed - ', e)
             traceback.print_exc()
