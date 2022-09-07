@@ -125,18 +125,18 @@ class YoutubeComment:
 
     def get_comments_detail(self, video_id):
         comment_with_commenter_name = list()
-        t = ("video_id", "commenter_name", "comment", "likes")
+        t = ("commenter_name", "comment", "likes")
         comment_generator = self.get_comments(video_id, 1, 'en')
         for comment in comment_generator:
-            comment["video_id"] = video_id
             comment['comment'] = comment.pop('text')
             comment['commenter_name'] = comment.pop('author')
             comment['likes'] = comment.pop('votes')
             comment = dict([(key, comment[key]) for key in t])
             comment_with_commenter_name.append(comment)
 
+        comments = {"video_id": video_id, "comments": comment_with_commenter_name}
         no_of_comments = len(comment_with_commenter_name)
-        result = Mongodb("comments").insert_comments(comment_with_commenter_name)
+        result = Mongodb("comments").insert_comments(comments)
         if result: Postgresdb("youtube").update(no_of_comments, video_id)
         # print("Successfully Inserted!" if result == True else "Insert Failed!")
 

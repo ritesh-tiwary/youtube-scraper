@@ -16,13 +16,17 @@ class Mongodb:
             return list(record)
         except ConnectionFailure:
             print("Server not available")
+        except Exception as error:
+            print(error)
 
     def insert_comments(self, comment_with_commenter_name):
         try:
-            result = self.collection.insert_many(comment_with_commenter_name)
+            result = self.collection.insert_one(comment_with_commenter_name)
             return result.acknowledged
         except ConnectionFailure:
             print("Server not available")
+        except Exception as error:
+            print(error)
 
 
 class Postgresdb:

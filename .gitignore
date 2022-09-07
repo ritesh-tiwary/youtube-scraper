@@ -1,6 +1,7 @@
 *.odt
 *.mp4
 *.json
+*.log
 *.ini
 .idea
 __pycache__
