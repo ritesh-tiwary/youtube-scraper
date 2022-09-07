@@ -22,7 +22,6 @@ class Mongodb:
     def insert_comments(self, comment_with_commenter_name):
         try:
             result = self.collection.insert_one(comment_with_commenter_name)
-            print(f"Inserted Count: {result.inserted_count}")
             return result.acknowledged
         except ConnectionFailure:
             print("Server not available")
