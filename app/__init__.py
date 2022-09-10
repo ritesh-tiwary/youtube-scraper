@@ -7,8 +7,7 @@ from flask_cors import CORS, cross_origin
 from .database import Mongodb, Postgresdb
 from .youtube_search import YoutubeSearch
 from .youtube_comment import YoutubeComment
-from .youtube_video_download import YoutubeVideo
-# from .google_drive_video_upload import GoogleDrives
+from .youtube_video import YoutubeVideo
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -56,8 +55,7 @@ def content():
 
             Postgresdb("youtube").insert(data)
             Thread(target=YoutubeComment().get_comments_details, args=[data], daemon=True).start()
-            Thread(target=YoutubeVideo.download, args=[data], daemon=True).start()
-            # GoogleDrives.upload()
+            Thread(target=YoutubeVideo(data).download, daemon=True).start()
             data = Postgresdb("youtube").select(channel_id)
             return render_template('results.html', data=data), 200
         except Exception as e:

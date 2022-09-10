@@ -27,8 +27,8 @@ class Mongodb:
             print("Server not available")
         except DuplicateKeyError:
             try:
-                result = self.collection.delete_one({"video_id": comment_with_commenter_name["video_id"]})
-                print(f"Deleted Count: {result.deleted_count}")
+                self.collection.delete_one({"video_id": comment_with_commenter_name["video_id"]})
+                # print(f"Deleted Count: {result.deleted_count}")
                 result = self.collection.insert_one(comment_with_commenter_name)
                 return result.acknowledged
             except Exception as error:
@@ -47,18 +47,20 @@ class Postgresdb:
             cursor = self.connection.cursor()
             cursor.execute(f"SELECT * FROM YOUTUBE WHERE CHANNELID='{channel_id}'")
             result = cursor.fetchall()
-            return result
         except psycopg2.DatabaseError as error:
             print(error)
         finally:
             cursor.close()
             self.connection.close()
+        return result
 
     def update(self, no_of_comments, video_id):
         try:
             cursor = self.connection.cursor()
             cursor.execute("UPDATE YOUTUBE SET COMMENTCOUNT=%s WHERE VIDEOID=%s", (no_of_comments, video_id))
-            print(f"No of comments({no_of_comments}) updated for video id({video_id})!")
+            # print(f"No of comments({no_of_comments}) updated for video id({video_id})!")
+            rowcount = cursor.rowcount
+            print(f"{rowcount} Rows Successfully Updated!")
         except psycopg2.DatabaseError as error:
             print(error)
         except Exception as error:
