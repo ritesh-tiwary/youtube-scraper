@@ -1,7 +1,9 @@
+*.sh
 *.odt
 *.mp4
 *.log
 *.ini
+*.json
 .idea
 __pycache__
 
