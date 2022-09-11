@@ -14,6 +14,7 @@
         <th>Channel Name</th>
         <th>Title</th>
         <th>Video Link</th>
+        <th>Download Link</th>
         <th>Views</th>
         <th>Comments</th>
         <th>Thumbnail</th>
@@ -23,6 +24,12 @@
         <td>{{item[2]}}</td>
         <td>{{item[4]}}</td>
         <td><a href="{{item[5]}}" target="_blank">{{item[5]}}</a></td>
+
+        <td><a href="https://storage.googleapis.com/staging.back-end-app-67f2d.appspot.com/youtube_video/{{item[0]}}.mp4" target="_blank" download="{{item[0]}}.mp4">
+              <img src="static/img/download.png" alt="" width="104" height="142">
+            </a>
+        </td>
+
         <td>{{item[6].split()[0] if item[6] is not none else 0}}</td>
         <td><a href="/comments/{{item[0]}}" target="_blank">{{item[7]}}</a></td>
         <td><img src="{{item[8]}}" alt="..." style="width:100%"></td>

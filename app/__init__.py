@@ -79,6 +79,18 @@ def comments(video_id):
     return render_template("comments.html", data=data), 200
 
 
+@app.route("/download/<video_id>")
+@cross_origin()
+def download(video_id):
+    try:
+        YoutubeVideo().download_blob(video_id)
+    except Exception as e:
+        print('The Exception message is: ', e)
+        traceback.print_exc()
+        return 'something is wrong', 500
+    return f"File {video_id}.mp4 downloaded to app/download/{video_id}.mp4", 200
+
+
 @app.route("/cleanup/<id>")
 @cross_origin()
 def cleanup(id):

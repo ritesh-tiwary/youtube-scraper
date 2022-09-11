@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 class YoutubeVideo:
-    def __init__(self, videos):
+    def __init__(self, videos: list = None):
         self.videos = videos
         self.credentials = service_account.Credentials.from_service_account_file(os.environ["FILE_NAME"])
 
@@ -50,6 +50,25 @@ class YoutubeVideo:
             blob.upload_from_filename(source_file_name)
             os.remove(source_file_name)
             print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+        except Exception as e:
+            print('The Exception message is: Upload failed - ', e)
+            traceback.print_exc()
+
+    def download_blob(self, video_id):
+        """
+        Uploads a file to the google cloud bucket.
+        Returns : Name's of the file uploaded to Google Cloud Bucket
+        """
+        try:
+            print(f"Downloading - {video_id}.mp4")
+            bucket_name: str = "staging.back-end-app-67f2d.appspot.com"
+            source_file_name = f"youtube_video/{video_id}.mp4"
+            destination_file_name = f"app/download/{video_id}.mp4"
+            storage_client = storage.Client(credentials=self.credentials)
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(source_file_name)
+            blob.download_to_filename(destination_file_name)
+            print(f"File {video_id}.mp4 downloaded to {destination_file_name}.")
         except Exception as e:
             print('The Exception message is: Upload failed - ', e)
             traceback.print_exc()
