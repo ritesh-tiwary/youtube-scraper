@@ -75,7 +75,6 @@ class Postgresdb:
         try:
             cursor = self.connection.cursor()
             # cursor.execute("DROP TABLE YOUTUBE")
-            # cursor.execute("DELETE FROM YOUTUBE")
             # cursor.execute(
             #     "CREATE TABLE YOUTUBE(VideoId VARCHAR(50) PRIMARY KEY, ChannelId VARCHAR(100) NOT NULL,"
             #     "ChannelName VARCHAR(100), ChannelUrl VARCHAR(200) NOT NULL, Title VARCHAR(500) NOT NULL,"
@@ -88,6 +87,22 @@ class Postgresdb:
                                "ON CONFLICT DO NOTHING", data)
             rowcount = cursor.rowcount
             print(f"{rowcount} Rows Successfully Inserted!")
+        except psycopg2.DatabaseError as error:
+            print(error)
+        except Exception as error:
+            print(error)
+        else:
+            self.connection.commit()
+            cursor.close()
+        finally:
+            self.connection.close()
+
+    def delete(self):
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM YOUTUBE")
+            rowcount = cursor.rowcount
+            print(f"{rowcount} Rows Successfully Deleted!")
         except psycopg2.DatabaseError as error:
             print(error)
         except Exception as error:

@@ -96,6 +96,7 @@ def download(video_id):
 def cleanup(id):
     try:
         if id == "101":
+            Postgresdb("youtube").delete()
             for f in os.listdir("app/download"):
                 os.remove(os.path.join("app/download", f))
                 print(f"Deleted - {f}")
