@@ -23,3 +23,10 @@ youtube-scraper - scraper app which is able to scrap video title, video link, vi
 - Created postgresql-rectangular-93245 as DATABASE_URL
 - Use heroku addons:docs heroku-postgresql to view documentation
 
+---
+
+* sudo /opt/google/google-cloud-sdk/bin/gcloud init
+* sudo /opt/google/google-cloud-sdk/bin/gcloud app deploy
+
+
+
