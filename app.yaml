@@ -1,6 +1,4 @@
 runtime: python39
-api_version: 1
-threadsafe: yes
 instance_class: B1
 default_expiration: "4d 5h"
 entrypoint: gunicorn -b :$PORT app:app
